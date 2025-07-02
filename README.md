@@ -48,6 +48,29 @@ Instalar cronjob:
 crontab cronjob.txt
 ```
 
+Rotacion de Logs cada 30 dias, se conserva 1 años de Logs
+
+```bash
+vim /etc/logrotate.d/sync_estado
+
+/root/apiflowdat/sync_estado.log
+/root/apiflowdat/clientes.log
+/root/apiflowdat/soap.log {
+    monthly
+    rotate 12
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 640 root root
+    sharedscripts
+    postrotate
+        systemctl reload rsyslog > /dev/null 2>&1 || true
+    endscript
+}
+
+```
+
 ## 📄 Logs
 
 - Local: `sync_estado.log`
