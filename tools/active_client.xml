@@ -1,0 +1,14 @@
+# XML prueba activar cliente
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:cm="http://XXX.XXX.XXX.XXX/api/v_2_0_3/cmclienteSoap">
+        <soapenv:Header/>
+        <soapenv:Body>
+                <cm:activeCmcliente>
+                   <cm:cli>
+                        <cm:idgestion>CODIGODECLIENTE</cm:idgestion>
+                        <cm:estado>activo</cm:estado>
+                        <cm:tenencia>TENECIAo</cm:tenencia>
+                   </cm:cli>
+                </cm:activeCmcliente>
+        </soapenv:Body>
+</soapenv:Envelope>

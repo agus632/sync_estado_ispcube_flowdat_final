@@ -1,0 +1,14 @@
+# XML prueba suspender cliente
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:cm="http://XXX.XXX.XXX.XXX/api/v_2_0_3/cmclienteSoap">
+        <soapenv:Header/>
+        <soapenv:Body>
+                <cm:suspendCmcliente>
+                   <cm:cli>
+                        <cm:idgestion>CODIGODECLIENTE</cm:idgestion>
+                        <cm:estado>suspended</cm:estado>
+                        <cm:tenencia>TENECIA</cm:tenencia>
+                   </cm:cli>
+                </cm:suspendCmcliente>
+        </soapenv:Body>
+</soapenv:Envelope>
