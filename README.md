@@ -4,7 +4,7 @@
 Este sistema consulta el estado de los clientes en ISPCube, lo compara con el último estado registrado localmente, y en caso de cambios, actualiza Flowdat por SOAP.
 
 ## 🧱 Requisitos
-
+- Debian 12 instalación limpia
 - Python 3.11+
 - SQLite3
 - Acceso a ISPCube vía API
