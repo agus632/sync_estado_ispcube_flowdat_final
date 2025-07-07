@@ -48,7 +48,9 @@ Instalar cronjob:
 crontab cronjob.txt
 ```
 
-Rotacion de Logs cada 30 dias, se conserva 1 años de Logs
+## ++ Rotacion de Logs 
+
+Cada 30 dias, se conserva 1 año de Logs
 
 ```bash
 vim /etc/logrotate.d/sync_estado
