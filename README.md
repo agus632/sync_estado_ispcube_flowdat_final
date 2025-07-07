@@ -3,7 +3,7 @@
 
 Este sistema consulta el estado de los clientes en ISPCube, lo compara con el último estado registrado localmente, y en caso de cambios, actualiza Flowdat por SOAP.
 
-## 🧱 Requisitos
+## ++ Requisitos
 - Debian 12 instalación limpia
 - Python 3.11+
 - SQLite3
@@ -11,7 +11,7 @@ Este sistema consulta el estado de los clientes en ISPCube, lo compara con el ú
 - Acceso a Flowdat vía SOAP
 - Servidor syslog opcional
 
-## 🔧 Instalación
+## ++ Instalación
 
 ```bash
 sudo apt update
@@ -21,7 +21,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 🚀 Uso
+## ++ Uso
 
 Inicializar base de datos:
 
@@ -35,7 +35,7 @@ Ejecutar sincronización:
 python3 sync_estado_ispcube.py
 ```
 
-## 🗓️ Cron cada 10 minutos
+## ++ Cron cada 10 minutos
 
 Archivo `cronjob.txt`:
 ```cron
