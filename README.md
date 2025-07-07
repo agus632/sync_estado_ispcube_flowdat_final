@@ -35,11 +35,11 @@ Ejecutar sincronización:
 python3 sync_estado_ispcube.py
 ```
 
-## 🗓️ Cron cada 30 minutos
+## 🗓️ Cron cada 10 minutos
 
 Archivo `cronjob.txt`:
 ```cron
-*/30 * * * * /bin/bash -c 'cd /ruta/proyecto && source venv/bin/activate && python3 sync_estado_ispcube.py'
+*/10 * * * * /bin/bash -c 'cd /ruta/proyecto && source venv/bin/activate && python3 sync_estado_ispcube.py'
 ```
 
 Instalar cronjob:
@@ -74,4 +74,4 @@ vim /etc/logrotate.d/sync_estado
 ## 📄 Logs
 
 - Local: `sync_estado.log`
-- Syslog: servidor 10.0.0.182 puerto 1024
+- Syslog: servidor x.x.x.x puerto xxxx
