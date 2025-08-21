@@ -1,3 +1,4 @@
+
 import os
 import sqlite3
 import logging
@@ -8,9 +9,14 @@ from dotenv import load_dotenv
 
 load_dotenv("config.env")
 
+logging.basicConfig(
+    level=logging.DEBUG,  # <-- DEBUG muestra TODO
+    format="%(asctime)s [%(levelname)s] %(message)s"
+    )
+
 # Logger
 logger = logging.getLogger("sync_estado")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
 # Log local
@@ -69,9 +75,62 @@ def obtener_clientes_ispcube():
     }
 
     url = f"{os.getenv('ISPCUBE_BASE_URL')}/customers/customers_list"
-    resp = requests.get(url, headers=headers)
-    resp.raise_for_status()
-    return resp.json()
+    limit = int(os.getenv("ISPCUBE_LIMIT", "100"))
+    offset = 0
+    todos = []
+
+    try:
+        while True:
+            paged_url = f"{url}?limit={limit}&offset={offset}"
+            resp = requests.get(paged_url, headers=headers)
+            resp.raise_for_status()
+            #data = None
+            
+            try:
+                data = resp.json()
+            except ValueError:
+                logging.error("Respuesta no es JSON válido (posible 204/empty body)")
+                #break
+
+                logging.debug(f"Keys JSON: {list(data.keys()) if isinstance(data, dict) else 'lista' if data is not None else 'None'}")
+            if data is None:
+    	        items = []
+       	    elif isinstance(data, list):
+                items = data
+            elif isinstance(data, dict):
+                payload = data.get("data", data)
+                if payload is None:
+                    items = []
+                elif isinstance(payload, list):
+                    items = payload
+                elif isinstance(payload, dict):
+                    items = [payload] if payload else []
+                else:
+        	        logging.error(f"Formato inesperado: {type(payload)}")
+        	        items = []
+            else:
+                logging.error(f"Formato inesperado en data: {type(data)}")
+                items = []
+
+            if not items:
+                logging.debug("Sin más registros, fin de paginación")
+                break
+
+            todos.extend(items)
+            logging.debug(f"Página offset={offset}: {len(items)} registros")
+            #if items:
+                #logging.debug(f"Ejemplo cliente: {items[0]}")
+
+            if len(items) < limit:
+                logging.debug("Última página detectada")
+                break
+            offset += limit
+            
+        logging.debug(f"Total clientes acumulados: {len(todos)}")
+        return todos
+    except Exception:
+        logging.error("Error durante la paginación / parseo JSON", exc_info=True)
+        return []
 
 # SOAP a Flowdat via curl
 def enviar_estado_flowdat(idgestion, estado):
@@ -80,9 +139,9 @@ def enviar_estado_flowdat(idgestion, estado):
     tenencia = os.getenv("FLOWDAT_TENENCIA")
     url = os.getenv("FLOWDAT_ENDPOINT")
     if estado == "activo":
-        metodo = "activeCmcliente"
-    elif estado == "suspended":
-        metodo = "suspendCmcliente"
+        metodo = "activeCmcliente" 
+    elif estado == "suspended": 
+        metodo = "suspendCmcliente"    
     else:
         raise ValueError(f"Estado inválido: {estado}")
 
@@ -93,26 +152,26 @@ def enviar_estado_flowdat(idgestion, estado):
   <soapenv:Body>
    <cm:{metodo}>
     <cm:cli>
-        <cm:idgestion>{idgestion}</cm:idgestion>
+        <cm:idgestion>{idgestion}</cm:idgestion>      
         <cm:tenencia>{tenencia}</cm:tenencia>
-    </cm:cli>
+    </cm:cli>    
   </cm:{metodo}>
  </soapenv:Body>
 </soapenv:Envelope>"""
 
-# Registrar el XML completo en el log soap.log
+# Registrar el XML completo en el log soap.log 
     soap_logger.info(f"Enviando SOAP a Flowdat ({metodo}) para ID {idgestion}:\n{xml}")
 
     try:
         result = subprocess.run([
-            "curl",
+            "curl", 
             "-u", f"{usuario}:{password}",
             "-H", "Content-Type: text/xml;charset=utf-8",
-            "-H", f"SOAPAction: {metodo}",
+            "-H", f"SOAPAction: {metodo}", 
             "-d", xml,
             url
              ], capture_output=True, text=True, timeout=30)
-
+        
         if result.returncode != 0:
             raise RuntimeError(f"curl error: {result.stderr.strip()}")
         if "Fault" in result.stdout:
@@ -120,7 +179,7 @@ def enviar_estado_flowdat(idgestion, estado):
         print(f"[OK] Estado actualizado para {idgestion}: {estado}")
         return result.stdout.strip()
     except Exception as e:
-        raise RuntimeError(f"Error al enviar SOAP con curl: {e}")
+            raise RuntimeError(f"Error al enviar SOAP con curl: {e}")
 
 # Equivalencia de estados
 estado_map = {"enabled": "activo", "blocked": "suspended"}
